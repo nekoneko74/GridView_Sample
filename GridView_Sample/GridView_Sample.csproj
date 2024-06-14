@@ -68,12 +68,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="database\Staff.sql" />
+    <Content Include="GridViewForm0.aspx" />
     <Content Include="GridViewForm1.aspx" />
     <Content Include="GridViewForm2.aspx" />
     <Content Include="GridViewForm3.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GridViewForm0.aspx.cs">
+      <DependentUpon>GridViewForm0.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="GridViewForm0.aspx.designer.cs">
+      <DependentUpon>GridViewForm0.aspx</DependentUpon>
+    </Compile>
     <Compile Include="GridViewForm1.aspx.cs">
       <DependentUpon>GridViewForm1.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

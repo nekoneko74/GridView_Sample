@@ -29,6 +29,7 @@
             イベントの引数など：<asp:Literal ID="Literal_Args" runat="server"></asp:Literal>
         </div>
         <div>
+            <a href="GridViewForm0.aspx">SqlDataSource版（GridViewForm0.aspx）</a><br />
             <a href="GridViewForm1.aspx">SqlDataAdapter～DataTable版（GridViewForm1.aspx）</a><br />
             <a href="GridViewForm2.aspx">DAO/DTO版（AutoGenerateColumns=True）（GridViewForm2.aspx）</a>
         </div>
