@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
 namespace GridView_Sample
@@ -9,7 +7,7 @@ namespace GridView_Sample
     /// <summary>
     /// GridViewの操作サンプル
     /// </summary>
-    public partial class GridViewForm1 : System.Web.UI.Page
+    public partial class GridViewForm3 : System.Web.UI.Page
     {
         /// <summary>
         /// GridViewのページ変更イベントが発生した際に呼び出されるイベントハンドラ
@@ -21,9 +19,9 @@ namespace GridView_Sample
             this.Literal_Event.Text = "PageIndexChanging";
             this.Literal_Args.Text = $"e.NewPageIndex: {e.NewPageIndex}";
 
-            // データテーブルの新しいページをバインドする
-            DataTable dataTable = this.Select();
-            this.GridView.DataSource = dataTable;
+            // スタッフリストの新しいページをバインドする
+            List<StaffDto> staffList = this.Select();
+            this.GridView.DataSource = staffList;
             this.GridView.PageIndex = e.NewPageIndex;
             this.GridView.DataBind();
         }
@@ -39,9 +37,8 @@ namespace GridView_Sample
             if (DataControlRowType.DataRow == e.Row.RowType)
             {
                 // 表示される文字列を書き換える
-                DataRowView rowView = (DataRowView)e.Row.DataItem;
-                DataRow rowData = rowView.Row;
-                e.Row.Cells[5].Text = (9 == (Byte)rowData.ItemArray[4]) ? "システム管理者" : "一般スタッフ";
+                StaffDto rowRecord = (StaffDto)e.Row.DataItem;
+                e.Row.Cells[5].Text = (StaffType.ADMIN == rowRecord.StaffType) ? "システム管理者" : "一般スタッフ";
             }
         }
 
@@ -117,10 +114,9 @@ namespace GridView_Sample
                 this.ViewState["SortDirection"] = "ASC";
             }
 
-            // データテーブルをソートしてからバインドする
-            DataTable dataTable = this.Select();
-            dataTable.DefaultView.Sort = String.Format("{0} {1}", this.ViewState["SortExpression"], this.ViewState["SortDirection"]);
-            this.GridView.DataSource = dataTable;
+            // スタッフリストをソートしてバインドする
+            List<StaffDto> staffList = this.Select();
+            this.GridView.DataSource = staffList;
             this.GridView.DataBind();
         }
 
@@ -134,8 +130,8 @@ namespace GridView_Sample
             if (true != this.IsPostBack)
             {
                 // 初期表示を行う
-                DataTable dataTable = this.Select();
-                this.GridView.DataSource = dataTable;
+                List<StaffDto> staffList = this.Select();
+                this.GridView.DataSource = staffList;
                 this.GridView.DataKeyNames = new string[] { "StaffId" };
                 this.GridView.DataBind();
             }
@@ -145,30 +141,22 @@ namespace GridView_Sample
         /// データベースにアクセスしてデータを取得する
         /// </summary>
         /// <returns></returns>
-        public DataTable Select()
+        public List<StaffDto> Select()
         {
-            DataTable dataTable = new DataTable();
-
-            String selectCommand = "SELECT [StaffId], [Account], [Password], [DisplayName], [StaffType], [UpdateDate], [UpdateStaffId], [DeleteDate] FROM [Staff]";
-
-            String connectionString = ConfigurationManager.ConnectionStrings["ASPNETConnectionString"].ConnectionString;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            int orderFieldIndex = 0;
+            String sortExpression = this.ViewState["SortExpression"] as String;
+            if (sortExpression is String)
             {
-                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(selectCommand, connection);
-                sqlDataAdapter.Fill(dataTable);
+                orderFieldIndex = Array.IndexOf(StaffDao.FieldNames, sortExpression);
+            }
+            bool orderDirectionAscending = true;
+            String sortDirection = this.ViewState["SortDirection"] as String;
+            if (sortDirection is String)
+            {
+                orderDirectionAscending = ("ASC" == sortDirection) ? true : false;
             }
 
-            // フィールド名を変えるとGridViewのヘッダーテキストも変わる（SQL側でASでエイリアスを指定しても同様）
-            // と同時に、DataKeyNameに設定する名前やソート時に返されるExpressionも変わるので注意
-            dataTable.Columns[1].ColumnName = "アカウント";
-            dataTable.Columns[2].ColumnName = "パスワード";
-            dataTable.Columns[3].ColumnName = "表示名";
-            dataTable.Columns[4].ColumnName = "スタッフ種別";
-            dataTable.Columns[5].ColumnName = "更新日時";
-            dataTable.Columns[6].ColumnName = "更新スタッフID";
-            dataTable.Columns[7].ColumnName = "削除日時";
-
-            return dataTable;
+            return StaffDao.Select(null, null, null, orderFieldIndex, orderDirectionAscending);
         }
     }
 }
