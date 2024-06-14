@@ -14,17 +14,6 @@ namespace GridView_Sample
     public partial class GridViewForm0 : System.Web.UI.Page
     {
         /// <summary>
-        /// GridViewのページ変更イベントが発生した際に呼び出されるイベントハンドラ
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected void GridView_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            this.Literal_Event.Text = "PageIndexChanging";
-            this.Literal_Args.Text = $"e.NewPageIndex: {e.NewPageIndex}";
-        }
-
-        /// <summary>
         /// GridViewの行にデータがバインドされる際に呼び出されるイベントハンドラ
         /// </summary>
         /// <param name="sender"></param>
